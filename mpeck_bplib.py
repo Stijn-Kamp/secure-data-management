@@ -18,12 +18,12 @@ class MPECK:
     """
 
     def __init__(self):
-        self.keycount = 0 # number of keys generated
+        self.keycount = 0  # number of keys generated
 
         # Generate a random prime number of 256 bits using the miller rabin test
-        self.n: int = randrange(2**256, 2**257) 
+        self.n: int = randrange(2**256, 2**257)
         while not miller_rabin(self.n, 5000):
-            self.n = randrange(2**256, 2**257) 
+            self.n = randrange(2**256, 2**257)
 
         # Define the hash functions
         def hash1(x: int):
@@ -33,7 +33,7 @@ class MPECK:
         def hash2(x: int):
             h = int(sha3_256(x.to_bytes(length=32, byteorder="big")).hexdigest(), 16)
             return multiply(G1, h)
-    
+
         self.h1 = hash1
         self.h2 = hash2
 
@@ -69,7 +69,7 @@ class MPECK:
         return (A, B, C)
 
     def trapdoor(self, secret_key: int, query: [(int, int)]):
-        """ 
+        """
         This function generates a trapdoor for a given secret key and a query.
 
         Args:
@@ -88,7 +88,7 @@ class MPECK:
         return (T1, T2, T3, [qw[1] for qw in query])
 
     def test(self, public_key, S, T) -> bool:
-        """ 
+        """
         This function tests the validity of a search given a public key, search results (S), and a trapdoor (T).
 
         Args:
@@ -113,14 +113,15 @@ class MPECK:
 
         print(a)
         print(b)
-        print(c)        
+        print(c)
         print(b * c)
         return a == b * c
 
+
 if __name__ == "__main__":
     # Test the MPECK scheme
-    mpeck = MPECK()
-    key0 = mpeck.generate_key()
-    S = mpeck.add_doc([(key0[0], key0[2])], [1])
-    T = mpeck.trapdoor(key0[1], [(1, 0)])
-    print(mpeck.test(key0[2], S, T))
+    mpeck = MPECK()  # Initialize the MPECK scheme
+    key0 = mpeck.generate_key()  # Generate a key pair for the first user
+    S = mpeck.add_doc([(key0[0], key0[2])], [1])  # Add a document to the MPECK system
+    T = mpeck.trapdoor(key0[1], [(1, 0)])  # Generate a trapdoor for the first user
+    print(mpeck.test(key0[2], S, T))  # Test the validity of the search
