@@ -18,11 +18,25 @@ class MPECK:
         self.g = Element.random(self.bilinear_map, G1)
         self.keycount = 0
 
-        def hash1(x: str):
+        def hash1(x: str) -> Element:
+            """
+            First hash function mapping to G1 using blake3.
+
+            :param str x: The string to hash
+
+            :return: An group element of G1
+            """
             h = int(blake3(bytes(x, 'utf-8')).hexdigest(), 16)
             return Element(self.bilinear_map, G1, value=self.g**h)
 
-        def hash2(x: str):
+        def hash2(x: str) -> Element:
+            """
+            Second hash function mapping to G1 using sha3_256.
+
+            :param str x: The string to hash
+
+            :return: An group element of G1
+            """
             h = int(sha3_256(bytes(x, 'utf-8')).hexdigest(), 16)
             return Element(self.bilinear_map, G1, value=self.g**h)
 
@@ -44,7 +58,7 @@ class MPECK:
         self.keycount += 1
         return (y, x, self.keycount - 1)
 
-    def add_doc(self, public_keys: [(Element, int)], keywords: [str], message: str) -> (str, (Element, dict[int, Element])):
+    def add_doc(self, public_keys: [(Element, int)], keywords: [str], message: str) -> ((bytes, bytes, bytes), (Element, dict[int, Element])):
         """
         Compute the values to be stored for a document that is added to the
         system.
@@ -53,7 +67,7 @@ class MPECK:
         :param [str] keywords: A list of keywords to add to the document.
         :param str message: The text of the document.
 
-        :return: A tuple of (ciphertext, (A, B, C))
+        :return: A tuple of ((ciphertext, tag, nonce), (A, B, C))
         """
         s = Element.random(self.bilinear_map, Zr)
         r = Element.random(self.bilinear_map, Zr)
@@ -64,10 +78,6 @@ class MPECK:
         cipher = AES.new(key, AES.MODE_GCM)
         nonce = cipher.nonce
         ciphertext, tag = cipher.encrypt_and_digest(bytes(message, 'utf-8'))
-        print("encrypt:")
-        print("nonce:", type(nonce))
-        print("Key:", type(key))
-        print("Ciphertext:", type(ciphertext))
         return ((ciphertext, tag, nonce), (A, B, C))
 
     def trapdoor(self, secret_key: int, query: [(str, int)]) -> (Element, Element, Element, [int]):
@@ -114,12 +124,12 @@ class MPECK:
         c = self.e(B, T3)
         return (a == b * c)
 
-    def decrypt(self, secret_key, ciphertext_tag_nonce, A, B):
+    def decrypt(self, secret_key, ciphertext_tag_nonce, A, B) -> str:
         """
         Decrypt a ciphertext using a secret key and some attributes.
 
         :param Element secret_key: The secret key to decrypt the ciphertext.
-        :param str ciphertext: The ciphertext to decrypt.
+        :param (bytes,bytes,bytes) ciphertext_tag_nonce: The ciphertext, tag and nonce to decrypt.
         :param Element A: attribute used for decryption.
         :param Element B: attribute used for decryption.
 
