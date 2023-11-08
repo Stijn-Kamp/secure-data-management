@@ -9,7 +9,7 @@ class Person:
         (self.pk, self.sk, self.keyindex) = mpeck.generate_key()
 
     def upload(self, other_person, document: str, keywords: [str]):
-        self.server.upload(self.mpeck.add_doc(other_person, keywords, document))
+        self.server.upload(*self.mpeck.add_doc(other_person, keywords, document))
 
     def search(self, keywords):
         texts = self.server.search(self.pk, self.mpeck.trapdoor(self.sk, keywords))
