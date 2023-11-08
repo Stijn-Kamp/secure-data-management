@@ -64,7 +64,7 @@ mpeck = MPECK()
 server = Server(mpeck)
 
 # Consultant
-consultant = Person(mpeck, server)
-client = Person(mpeck, server, consultant)
+consultant = Consultant(mpeck, server)
+client = Client(mpeck, server, consultant)
 print(client.upload("text", ["a"]))
 print
