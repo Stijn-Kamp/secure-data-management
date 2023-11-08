@@ -58,14 +58,15 @@ class MPECK:
         s = Element.random(self.bilinear_map, Zr)
         r = Element.random(self.bilinear_map, Zr)
         A = Element(self.bilinear_map, G1, value=self.g**r)
-        for pk in public_keys:
-            print(type(pk))
         B = {pk[1]: Element(self.bilinear_map, G1, value=pk[0]**s) for pk in public_keys}
         C = [Element(self.bilinear_map, G1, value=(self.h1(kw)**r) * (self.h2(kw)**s)) for kw in keywords]
         key = sha3_256((self.e(self.g, self.g)**(r*s)).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
         ciphertext, tag = cipher.encrypt_and_digest(bytes(message, 'utf-8'))
-        print("Ciphertext type:", type(ciphertext))
+        print("encrypt:")
+        print("Plaintext:", message)
+        print("Key:", key)
+        print("Ciphertext:", ciphertext)
         return (ciphertext, (A, B, C))
 
     def trapdoor(self, secret_key: int, query: [(str, int)]) -> (Element, Element, Element, [int]):
@@ -87,7 +88,6 @@ class MPECK:
         for keyword in query:
             T3 = T3 * self.h2(keyword[0])
         T3 **= t.__ifloordiv__(secret_key)
-        print(T1, T2, T3)
         return (T1, T2, T3, [qw[1] for qw in query])
 
     def test(self, public_key, S, T) -> bool:
@@ -104,7 +104,6 @@ class MPECK:
         CI = Element.one(self.bilinear_map, G1)
         for i in T[3]:
             CI = CI * S[2][i]
-        print(type(CI))
         A = S[0]
         T2 = T[1]
         B = S[1][public_key]
@@ -112,13 +111,6 @@ class MPECK:
         a = self.e(T1, CI)
         b = self.e(A, T2)
         c = self.e(B, T3)
-        print(a)
-        print(b)
-        print(B)
-        print("T3")
-        print(T3)
-        print(c)
-        print(b * c)
         return (a == b * c)
 
     def decrypt(self, secret_key, ciphertext, A, B):
@@ -134,7 +126,12 @@ class MPECK:
         """
         key = sha3_256((self.e(A, B)**(~secret_key)).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
-        return cipher.decrypt(ciphertext).decode('utf-8')
+        plaintext = cipher.decrypt(ciphertext).decode('utf-8')
+        print("decrypt:")
+        print("Plaintext:", message)
+        print("Key:", key)
+        print("Ciphertext:", ciphertext)
+        return plaintext
 
 
 # mpeck = MPECK()
