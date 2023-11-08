@@ -65,7 +65,7 @@ class MPECK:
         nonce = cipher.nonce
         ciphertext, tag = cipher.encrypt_and_digest(bytes(message, 'utf-8'))
         print("encrypt:")
-        print("Plaintext:", type(message))
+        print("nonce:", type(nonce))
         print("Key:", type(key))
         print("Ciphertext:", type(ciphertext))
         return ((ciphertext, tag, nonce), (A, B, C))
