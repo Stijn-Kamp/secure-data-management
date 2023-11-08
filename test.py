@@ -123,7 +123,7 @@ consultant.add_client(bob)
 
 print("Add some tags")
 key_location_server.add("2022")
-key_location_server.add_similar("2022", "2023")
+key_location_server.add_similar("2023", "2022")
 key_location_server.add("tax-returns")
 
 print("Alice: Upload last year's tax returns")
