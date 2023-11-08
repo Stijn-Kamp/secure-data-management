@@ -117,12 +117,13 @@ class MPECK:
             CI = CI * S[2][i]
         A = S[0]
         T2 = T[1]
-        B = S[1][public_key]
-        T3 = T[2]
-        a = self.e(T1, CI)
-        b = self.e(A, T2)
-        c = self.e(B, T3)
-        return (a == b * c)
+        if public_key in S[1]:
+            B = S[1][public_key]
+            T3 = T[2]
+            a = self.e(T1, CI)
+            b = self.e(A, T2)
+            c = self.e(B, T3)
+            return (a == b * c)
 
     def decrypt(self, secret_key, ciphertext_tag_nonce, A, B) -> str:
         """
