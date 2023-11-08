@@ -14,6 +14,7 @@ class Person:
     def search(self, keywords):
         texts = self.server.search(self.keyindex, self.mpeck.trapdoor(self.sk, keywords))
         for text in texts:
+            print("Text:")
             print(text)
             print(self.mpeck.decrypt(self.sk, *text))
 
