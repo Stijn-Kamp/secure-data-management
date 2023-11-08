@@ -18,12 +18,12 @@ class MPECK:
         self.g = Element.random(self.bilinear_map, G1)
         self.keycount = 0
 
-        def hash1(x: int):
-            h = int(blake3(x.to_bytes(length=32, byteorder='big')).hexdigest(), 16)
+        def hash1(x: str):
+            h = int(blake3(bytes(x, 'utf-8')).hexdigest(), 16)
             return Element(self.bilinear_map, G1, value=self.g**h)
 
-        def hash2(x: int):
-            h = int(sha3_256(x.to_bytes(length=32, byteorder='big')).hexdigest(), 16)
+        def hash2(x: str):
+            h = int(sha3_256(bytes(x, 'utf-8')).hexdigest(), 16)
             return Element(self.bilinear_map, G1, value=self.g**h)
 
         def e(e1, e2):
