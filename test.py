@@ -12,11 +12,12 @@ class Person:
         self.server.upload(*self.mpeck.add_doc(other_person, keywords, document))
 
     def search(self, keywords):
+        results = []
         texts = self.server.search(self.keyindex, self.mpeck.trapdoor(self.sk, keywords))
         for text in texts:
-            print("Text:")
-            print(text)
-            print(self.mpeck.decrypt(self.sk, *text))
+            results.append(self.mpeck.decrypt(self.sk, *text))
+
+        return results
 
 
 class Consultant(Person):
