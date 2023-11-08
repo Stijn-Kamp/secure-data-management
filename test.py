@@ -60,7 +60,7 @@ class Server:
 
 
 mpeck = MPECK()
-server = Server()
+server = Server(mpeck)
 
 # Consultant
 consultant = Person(mpeck, server)
