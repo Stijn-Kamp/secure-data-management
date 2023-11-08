@@ -118,7 +118,7 @@ key_location_server = KeyLocationServer()
 # Consultant
 consultant = Consultant(mpeck, server, key_location_server)
 client = Client(mpeck, server, key_location_server, "Dave", (consultant.pk, consultant.keyindex))
-consultant.add_client(client.name, client.pk)
+consultant.add_client(client.name, (client.pk, client.keyindex))
 key_location_server.add("a")
 client.upload("text", ["a"])
 print(client.search([("a")]))
