@@ -132,7 +132,7 @@ class MPECK:
         print("Key:", key)
         print("Ciphertext:", ciphertext)
         plaintext = cipher.decrypt_and_verify(ciphertext, tag).decode('utf-8')
-        print("Plaintext:", message)
+        print("Plaintext:", plaintext)
         return plaintext
 
 
