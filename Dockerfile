@@ -12,4 +12,4 @@ RUN git clone https://github.com/Stijn-Kamp/secure-data-management.git /mpeck
 WORKDIR /mpeck
 RUN python -m venv venv
 RUN git clone https://github.com/20Thomas02/pypbc.git /tmp/pypbc
-RUN bash -c 'source venv/bin/activate && cd /tmp/pypbc && pip install . && pip install -r requirements.txt'
+RUN bash -c 'source venv/bin/activate && pip install -r requirements.txt && cd /tmp/pypbc && pip install .'
