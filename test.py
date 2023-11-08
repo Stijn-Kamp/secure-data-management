@@ -49,7 +49,7 @@ class Server:
         res = []
         for doc in self.documents:
             if self.mpeck.test(keyindex, doc[1], trapdoor):
-                res.append((doc[0], doc[1][0], doc[1][1]))
+                res.append((doc[0], doc[1][0], doc[1][1][keyindex]))
         return res
 
 
