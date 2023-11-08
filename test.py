@@ -45,7 +45,7 @@ class Consultant(Person):
 
 
 class Client(Person):
-    def __init__(self, mpeck: MPECK, server: Server, consultant_key, key_location_server: KeyLocationServer):
+    def __init__(self, mpeck: MPECK, server: Server, key_location_server: KeyLocationServer, consultant_key):
         super().__init__(mpeck, server, key_location_server)
         self.consultant_pk, self.consultant_keyindex = consultant_key
 
