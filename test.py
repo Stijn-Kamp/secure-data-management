@@ -18,6 +18,7 @@ class Person:
 def Consultant(Person):
     def __init__(self, mpeck: MPECK, server: Server):
         super.__init__(mpeck, server)
+        print(self.pk, self.sk, self.keyindex)
         self.clients = []
 
     def upload(self, clientindex: int, document: str, keywords: [str]):
@@ -64,4 +65,6 @@ server = Server(mpeck)
 
 # Consultant
 consultant = Person(mpeck, server)
-
+client = Person(mpeck, server, consultant)
+print(client.upload("text", ["a"]))
+print
