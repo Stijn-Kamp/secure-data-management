@@ -14,13 +14,13 @@ class Person:
     def search(self, keywords):
         texts = self.server.search(self.keyindex, self.mpeck.trapdoor(self.sk, keywords))
         for text in texts:
+            print(text)
             print(self.mpeck.decrypt(self.sk, *text))
 
 
 class Consultant(Person):
     def __init__(self, mpeck: MPECK, server: Server):
         super().__init__(mpeck, server)
-        print(self.pk, self.sk, self.keyindex)
         self.clients = []
 
     def upload(self, clientindex: int, document: str, keywords: [str]):
