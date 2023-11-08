@@ -36,8 +36,8 @@ class Person:
 
 
 class Consultant(Person):
-    def __init__(self, mpeck: MPECK, server: Server):
-        super().__init__(mpeck, server)
+    def __init__(self, mpeck: MPECK, server: Server, key_location_server: KeyLocationServer):
+        super().__init__(mpeck, server, key_location_server)
         self.clients = []
 
     def upload(self, clientindex: int, document: str, keywords: [str]):
@@ -45,8 +45,8 @@ class Consultant(Person):
 
 
 class Client(Person):
-    def __init__(self, mpeck: MPECK, server: Server, consultant_key):
-        super().__init__(mpeck, server)
+    def __init__(self, mpeck: MPECK, server: Server, consultant_key, key_location_server: KeyLocationServer):
+        super().__init__(mpeck, server, key_location_server)
         self.consultant_pk, self.consultant_keyindex = consultant_key
 
     def upload(self, document: str, keywords: [str]):
