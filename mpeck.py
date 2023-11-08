@@ -7,6 +7,12 @@ from Crypto.Cipher import AES
 
 class MPECK:
     def __init__(self):
+        """
+        Create the MPECK object. This sets the global variables for the class.
+        These global variables are always the same, but the object does keep
+        track of the amount of keys handed out, and the same object should
+        therefore be used by all people for now.
+        """
         self.params = Parameters()
         self.bilinear_map = Pairing(self.params)
         self.g = Element.random(self.bilinear_map, G1)
@@ -28,12 +34,27 @@ class MPECK:
         self.e = e
 
     def generate_key(self) -> (Element, Element, int):
+        """
+        Generate a new key for the MPECK object and give it an index.
+
+        :return: A tuple of (pk, sk, index)
+        """
         x = Element.random(self.bilinear_map, Zr)
         y = Element(self.bilinear_map, G1, value=self.g**x)
         self.keycount += 1
         return (y, x, self.keycount - 1)
 
-    def add_doc(self, public_keys: [], keywords: [int], message):
+    def add_doc(self, public_keys: [(Element, int)], keywords: [str], message: str) -> (str, (Element, dict[int, Element])):
+        """
+        Compute the values to be stored for a document that is added to the
+        system.
+
+        :param [(Element,int)] public_keys: A list of public keys and their indexes to give access to the document.
+        :param [str] keywords: A list of keywords to add to the document.
+        :param str message: The text of the document.
+
+        :return: A tuple of (ciphertext, (A, B, C))
+        """
         s = Element.random(self.bilinear_map, Zr)
         r = Element.random(self.bilinear_map, Zr)
         A = Element(self.bilinear_map, G1, value=self.g**r)
@@ -44,9 +65,18 @@ class MPECK:
         key = sha3_512(self.e(G1, G1)**(r*s).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
         ciphertext, tag = cipher.encrypt_and_digest(message)
+        print("Ciphertext type:", type(ciphertext))
         return (ciphertext, (A, B, C))
 
-    def trapdoor(self, secret_key: int, query: [(int, int)]):
+    def trapdoor(self, secret_key: int, query: [(str, int)]) -> (Element, Element, Element, [int]):
+        """
+        Generate a trapdoor function.
+
+        :param int secret_key: The secret key of the person creating the trapdoor.
+        :param [(str,int)] query: The keywords to query for.
+
+        :return: The trapdoor (T1, T2, T3, I).
+        """
         t = Element.random(self.bilinear_map, Zr)
         T1 = self.g**t
         T2: Element = Element.one(self.bilinear_map, G1)
@@ -61,6 +91,15 @@ class MPECK:
         return (T1, T2, T3, [qw[1] for qw in query])
 
     def test(self, public_key, S, T) -> bool:
+        """
+        Run a test of trapdoor T on attributes S.
+
+        :param int public_key: The index of the public key that created the trapdoor.
+        :param (str,(Element,dict[int,Element])) S: The attributes to test against.
+        :param (Element,Element,Element,[int]) T: The trapdoor to test.
+
+        :return: Whether the trapdoor works for the attributes.
+        """
         T1 = T[0]
         CI = Element.one(self.bilinear_map, G1)
         for i in T[3]:
@@ -82,7 +121,17 @@ class MPECK:
         print(b * c)
         return (a == b * c)
 
-    def decrypt(secret_key, ciphertext, A, B):
+    def decrypt(self, secret_key, ciphertext, A, B):
+        """
+        Decrypt a ciphertext using a secret key and some attributes.
+
+        :param Element secret_key: The secret key to decrypt the ciphertext.
+        :param str ciphertext: The ciphertext to decrypt.
+        :param Element A: attribute used for decryption.
+        :param Element B: attribute used for decryption.
+
+        :return: The plaintext.
+        """
         xinv **= Element.one(self.bilinear_map, G1).__ifloordiv__(secret_key)
         key = sha3_512(self.e(A, B)**(xinv).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
