@@ -38,18 +38,28 @@ class Person:
 class Consultant(Person):
     def __init__(self, mpeck: MPECK, server: Server, key_location_server: KeyLocationServer):
         super().__init__(mpeck, server, key_location_server)
-        self.clients = []
+        self.clients = {}
 
-    def upload(self, clientindex: int, document: str, keywords: [str]):
-        super().upload([self.clients[clientindex], (self.pk, self.keyindex)], document, keywords)
+    def add_client(self, name: str, pk):
+        if name in self.clients:
+            print("Overriding client:", name)
+        self.clients[name] = pk
+
+
+    def upload(self, client: str, document: str, keywords: [str]):
+        keywords.append("client."+client)
+        super().upload([self.clients[client], (self.pk, self.keyindex)], document, keywords)
 
 
 class Client(Person):
-    def __init__(self, mpeck: MPECK, server: Server, key_location_server: KeyLocationServer, consultant_key):
+    def __init__(self, mpeck: MPECK, server: Server, key_location_server: KeyLocationServer, name, consultant_key):
         super().__init__(mpeck, server, key_location_server)
         self.consultant_pk, self.consultant_keyindex = consultant_key
+        self.name = name
+        self.key_location_server.add_similar("client."+self.name, "client.null")
 
     def upload(self, document: str, keywords: [str]):
+        keywords.append("clients."+self.name)
         super().upload([(self.consultant_pk, self.consultant_keyindex), (self.pk, self.keyindex)], document, keywords)
 
 
@@ -71,8 +81,8 @@ class Server:
 
 class KeyLocationServer:
     def __init__(self):
-        self.map = {}
-        self.count = 0
+        self.map = {"client.null": 0}
+        self.count = 1
 
     def add(self, keyword: str):
         if keyword.startswith("null."):
@@ -105,7 +115,9 @@ key_location_server = KeyLocationServer()
 
 # Consultant
 consultant = Consultant(mpeck, server, key_location_server)
-client = Client(mpeck, server, key_location_server, (consultant.pk, consultant.keyindex))
+client = Client(mpeck, server, key_location_server, "Dave" (consultant.pk, consultant.keyindex))
+consultant.add_client(client.name, client.pk)
 key_location_server.add("a")
-print(client.upload("text", ["a"]))
+client.upload("text", ["a"])
 print(client.search([("a")]))
+consultant.upload(client.name, "text2", ["a"])
