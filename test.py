@@ -60,7 +60,7 @@ class Client(Person):
         print(self.key_location_server.map)
 
     def upload(self, document: str, keywords: [str]):
-        keywords.append("clients."+self.name)
+        keywords.append("client."+self.name)
         super().upload([(self.consultant_pk, self.consultant_keyindex), (self.pk, self.keyindex)], document, keywords)
 
 
