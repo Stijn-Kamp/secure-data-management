@@ -40,10 +40,10 @@ class Consultant(Person):
         super().__init__(mpeck, server, key_location_server)
         self.clients = {}
 
-    def add_client(self, name: str, pk):
-        if name in self.clients:
-            print("Overriding client:", name)
-        self.clients[name] = pk
+    def add_client(self, client: Client):
+        if client.name in self.clients:
+            print("Overriding client:", client.name)
+        self.clients[client.name] = (client.pk, client.keyindex)
 
 
     def upload(self, client: str, document: str, keywords: [str]):
@@ -114,13 +114,28 @@ mpeck = MPECK()
 server = Server(mpeck)
 key_location_server = KeyLocationServer()
 
-# Consultant
+print("Create the consultant and 2 clients (Alice and bob)")
 consultant = Consultant(mpeck, server, key_location_server)
-client = Client(mpeck, server, key_location_server, "Dave", (consultant.pk, consultant.keyindex))
-consultant.add_client(client.name, (client.pk, client.keyindex))
-key_location_server.add("a")
-client.upload("text", ["a"])
-print(client.search([("a")]))
-consultant.upload(client.name, "text2", ["a"])
-print(client.search([("a")]))
-print(consultant.search([("a")]))
+alice = Client(mpeck, server, key_location_server, "Alice", (consultant.pk, consultant.keyindex))
+consultant.add_client(alice)
+bob = Client(mpeck, server, key_location_server, "Bob", (consultant.pk, consultant.keyindex))
+consultant.add_client(bob)
+
+print("Add some tags")
+key_location_server.add("2022")
+key_location_server.add_similar("2022", "2023")
+key_location_server.add("tax-returns")
+
+print("Alice: Upload last year's tax returns")
+alice.upload("I have no money!", ["tax-returns", "2022"])
+print("Alice: Search tax returns")
+print(alice.search([("tax-returns")]))
+print("Consultant: Upload Alice's tax returns of this year")
+consultant.upload(alice.name, "Alice has $10!", ["tax-returns", "2023"])
+print("Consultant: Upload Bob's tax returns of this year")
+consultant.upload(bob.name, "Bob has $65536!", ["tax-returns", "2023"])
+print("Alice: tax return documents:", alice.search([("tax-returns")]))
+print("Consultant: Alice documents:", consultant.search([("client."+alice.name)]))
+print("Consultant: 2023 documents:", consultant.search([("2023")]))
+print("Alice: 2023 documents:", alice.search([("2023")]))
+print("Bob: Alice documents:", bob.search([("client.Alice")]))
