@@ -62,6 +62,7 @@ class MPECK:
             print(type(pk))
         B = {pk[1]: Element(self.bilinear_map, G1, value=pk[0]**s) for pk in public_keys}
         C = [Element(self.bilinear_map, G1, value=(self.h1(kw)**r) * (self.h2(kw)**s)) for kw in keywords]
+        print(type(r *s))
         key = sha3_512(self.e(self.g, self.g)**(r*s).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
         ciphertext, tag = cipher.encrypt_and_digest(message)
