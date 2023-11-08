@@ -12,7 +12,7 @@ class Person:
         self.server.upload(*self.mpeck.add_doc(other_person, keywords, document))
 
     def search(self, keywords):
-        texts = self.server.search(self.pk, self.mpeck.trapdoor(self.sk, keywords))
+        texts = self.server.search(self.keyindex, self.mpeck.trapdoor(self.sk, keywords))
         for text in texts:
             print(self.mpeck.decrypt(self.sk, *text))
 
@@ -44,10 +44,10 @@ class Server:
     def upload(self, e, s):
         self.documents.append((e, s))
 
-    def search(self, pk, trapdoor):
+    def search(self, keyindex, trapdoor):
         res = []
         for doc in self.documents:
-            if self.mpeck.test(pk, doc[1], trapdoor):
+            if self.mpeck.test(keyindex, doc[1], trapdoor):
                 res.append((doc[0], doc[1][0], doc[1][1]))
         return res
 
