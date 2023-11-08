@@ -132,7 +132,7 @@ class MPECK:
 
         :return: The plaintext.
         """
-        key = sha3_512(self.e(A, B)**(~secret_key).__str__().encode()).digest()
+        key = sha3_256((self.e(A, B)**(~secret_key)).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
         plaintext = cipher.decrypt(ciphertext)
 
