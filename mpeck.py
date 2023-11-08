@@ -1,12 +1,8 @@
 from __future__ import annotations
-from miller_rabin import miller_rabin
-from random import randrange
-from math import prod
-from mod import Mod
-from functools import reduce
 from blake3 import blake3
-from hashlib import sha3_256
+from hashlib import sha3_256, sha3_512
 from pypbc import *
+from Crypto.Cipher import AES
 
 
 class MPECK:
@@ -37,7 +33,7 @@ class MPECK:
         self.keycount += 1
         return (y, x, self.keycount - 1)
 
-    def add_doc(self, public_keys: [], keywords: [int]):
+    def add_doc(self, public_keys: [], keywords: [int], message):
         s = Element.random(self.bilinear_map, Zr)
         r = Element.random(self.bilinear_map, Zr)
         A = Element(self.bilinear_map, G1, value=self.g**r)
@@ -45,7 +41,10 @@ class MPECK:
             print(type(pk))
         B = {pk[1]: Element(self.bilinear_map, G1, value=pk[0]**s) for pk in public_keys}
         C = [Element(self.bilinear_map, G1, value=(self.h1(kw)**r) * (self.h2(kw)**s)) for kw in keywords]
-        return (A, B, C)
+        key = sha3_512(self.e(G1, G1)**(r*s).__str__().encode()).digest()
+        cipher = AES.new(key, AES.MODE_GCM)
+        ciphertext, tag = cipher.encrypt_and_digest(message)
+        return (ciphertext, (A, B, C))
 
     def trapdoor(self, secret_key: int, query: [(int, int)]):
         t = Element.random(self.bilinear_map, Zr)
@@ -83,12 +82,18 @@ class MPECK:
         print(b * c)
         return (a == b * c)
 
+    def decrypt(secret_key, ciphertext, A, B):
+        xinv **= Element.one(self.bilinear_map, G1).__ifloordiv__(secret_key)
+        key = sha3_512(self.e(A, B)**(xinv).__str__().encode()).digest()
+        cipher = AES.new(key, AES.MODE_GCM)
+        plaintext = cipher.decrypt(ciphertext)
+
 
 mpeck = MPECK()
 print("a")
 key0 = mpeck.generate_key()
 print("b")
-S = mpeck.add_doc([(key0[0], key0[2])], [1])
+(E, S) = mpeck.add_doc([(key0[0], key0[2])], [1])
 print("c")
 T = mpeck.trapdoor(key0[1], [(1, 0)])
 print("d")
