@@ -59,6 +59,6 @@ server = Server(mpeck)
 
 # Consultant
 consultant = Consultant(mpeck, server)
-client = Client(mpeck, server, consultant)
+client = Client(mpeck, server, (consultant.pk, consultant.keyindex))
 print(client.upload("text", ["a"]))
 print(client.search(("a", 0)))
