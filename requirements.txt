@@ -1,2 +1,2 @@
-pycryptodome=3.19.0
-blake3=0.3.3
+pycryptodome==3.19.0
+blake3==0.3.3
