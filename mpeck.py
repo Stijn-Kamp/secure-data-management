@@ -126,11 +126,11 @@ class MPECK:
         """
         key = sha3_256((self.e(A, B)**(~secret_key)).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
-        plaintext = cipher.decrypt(ciphertext).decode('utf-8')
         print("decrypt:")
-        print("Plaintext:", message)
         print("Key:", key)
         print("Ciphertext:", ciphertext)
+        plaintext = cipher.decrypt(ciphertext).decode('utf-8')
+        print("Plaintext:", message)
         return plaintext
 
 
