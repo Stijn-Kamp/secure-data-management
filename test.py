@@ -105,6 +105,7 @@ class KeyLocationServer:
             raise Exception
         if keyword in self.map:
             return self.map[keyword]
+        print("Could not find keyword:", keyword)
         raise Exception
 
 
