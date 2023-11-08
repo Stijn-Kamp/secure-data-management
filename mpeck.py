@@ -132,8 +132,8 @@ class MPECK:
 
         :return: The plaintext.
         """
-
-        xinv = Element(self.bilinear_map, G1, value=self.g//secret_key)
+        xinv = self.g
+        xinv = xinv.__ifloordiv__(secret_key)
         key = sha3_512(self.e(A, B)**(xinv).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
         plaintext = cipher.decrypt(ciphertext)
