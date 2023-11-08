@@ -117,7 +117,6 @@ class MPECK:
             CI = CI * S[2][i]
         A = S[0]
         T2 = T[1]
-        print(public_key)
         B = S[1][public_key]
         T3 = T[2]
         a = self.e(T1, CI)
