@@ -57,7 +57,6 @@ class Client(Person):
         self.consultant_pk, self.consultant_keyindex = consultant_key
         self.name = name
         self.key_location_server.add_similar("client."+self.name, "client.null")
-        print(self.key_location_server.map)
 
     def upload(self, document: str, keywords: [str]):
         keywords.append("client."+self.name)
@@ -123,3 +122,5 @@ key_location_server.add("a")
 client.upload("text", ["a"])
 print(client.search([("a")]))
 consultant.upload(client.name, "text2", ["a"])
+print(client.search([("a")]))
+print(consultant.search([("a")]))
