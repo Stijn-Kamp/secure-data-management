@@ -62,12 +62,13 @@ class MPECK:
         C = [Element(self.bilinear_map, G1, value=(self.h1(kw)**r) * (self.h2(kw)**s)) for kw in keywords]
         key = sha3_256((self.e(self.g, self.g)**(r*s)).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
+        nonce = cipher.nonce
         ciphertext, tag = cipher.encrypt_and_digest(bytes(message, 'utf-8'))
         print("encrypt:")
         print("Plaintext:", message)
         print("Key:", key)
         print("Ciphertext:", ciphertext)
-        return (ciphertext, (A, B, C))
+        return ((ciphertext, tag, nonce), (A, B, C))
 
     def trapdoor(self, secret_key: int, query: [(str, int)]) -> (Element, Element, Element, [int]):
         """
@@ -113,7 +114,7 @@ class MPECK:
         c = self.e(B, T3)
         return (a == b * c)
 
-    def decrypt(self, secret_key, ciphertext, A, B):
+    def decrypt(self, secret_key, ciphertext_tag_nonce, A, B):
         """
         Decrypt a ciphertext using a secret key and some attributes.
 
@@ -124,12 +125,13 @@ class MPECK:
 
         :return: The plaintext.
         """
+        ciphertext, tag, nonce = ciphertext_tag_nonce
         key = sha3_256((self.e(A, B)**(~secret_key)).__str__().encode()).digest()
-        cipher = AES.new(key, AES.MODE_GCM)
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
         print("decrypt:")
         print("Key:", key)
         print("Ciphertext:", ciphertext)
-        plaintext = cipher.decrypt(ciphertext).decode('utf-8')
+        plaintext = cipher.decrypt_and_verify(ciphertext, tag).decode('utf-8')
         print("Plaintext:", message)
         return plaintext
 
