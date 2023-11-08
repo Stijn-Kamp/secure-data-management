@@ -1,6 +1,6 @@
 from __future__ import annotations
 from blake3 import blake3
-from hashlib import sha3_256, sha3_512
+from hashlib import sha3_256
 from pypbc import *
 from Crypto.Cipher import AES
 
@@ -62,7 +62,7 @@ class MPECK:
             print(type(pk))
         B = {pk[1]: Element(self.bilinear_map, G1, value=pk[0]**s) for pk in public_keys}
         C = [Element(self.bilinear_map, G1, value=(self.h1(kw)**r) * (self.h2(kw)**s)) for kw in keywords]
-        key = sha3_512((self.e(self.g, self.g)**(r*s)).__str__().encode()).digest()
+        key = sha3_256((self.e(self.g, self.g)**(r*s)).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM)
         ciphertext, tag = cipher.encrypt_and_digest(message)
         print("Ciphertext type:", type(ciphertext))
