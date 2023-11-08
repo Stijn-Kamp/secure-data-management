@@ -24,7 +24,7 @@ class Consultant(Person):
         self.clients = []
 
     def upload(self, clientindex: int, document: str, keywords: [str]):
-        self.upload([self.clients[clientindex], (super().pk, super().keyindex)], document, keywords)
+        self.upload([self.clients[clientindex], (self.pk, self.keyindex)], document, keywords)
 
 
 class Client(Person):
@@ -33,7 +33,7 @@ class Client(Person):
         self.consultant_pk, self.consultant_keyindex = consultant_key
 
     def upload(self, document: str, keywords: [str]):
-        super().upload([(self.consultant_pk, self.consultant_keyindex), (super().pk, super().keyindex)], document, keywords)
+        self.upload([(self.consultant_pk, self.consultant_keyindex), (self.pk, self.keyindex)], document, keywords)
 
 
 class Server:
