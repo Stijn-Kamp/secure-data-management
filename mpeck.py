@@ -65,9 +65,9 @@ class MPECK:
         nonce = cipher.nonce
         ciphertext, tag = cipher.encrypt_and_digest(bytes(message, 'utf-8'))
         print("encrypt:")
-        print("Plaintext:", message)
-        print("Key:", key)
-        print("Ciphertext:", ciphertext)
+        print("Plaintext:", type(message))
+        print("Key:", type(key))
+        print("Ciphertext:", type(ciphertext))
         return ((ciphertext, tag, nonce), (A, B, C))
 
     def trapdoor(self, secret_key: int, query: [(str, int)]) -> (Element, Element, Element, [int]):
@@ -128,20 +128,4 @@ class MPECK:
         ciphertext, tag, nonce = ciphertext_tag_nonce
         key = sha3_256((self.e(A, B)**(~secret_key)).__str__().encode()).digest()
         cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
-        print("decrypt:")
-        print("Key:", key)
-        print("Ciphertext:", ciphertext)
-        plaintext = cipher.decrypt_and_verify(ciphertext, tag).decode('utf-8')
-        print("Plaintext:", plaintext)
-        return plaintext
-
-
-# mpeck = MPECK()
-# print("a")
-# key0 = mpeck.generate_key()
-# print("b")
-# (E, S) = mpeck.add_doc([(key0[0], key0[2])], [1])
-# print("c")
-# T = mpeck.trapdoor(key0[1], [(1, 0)])
-# print("d")
-# print(mpeck.test(key0[2], S, T))
+        return cipher.decrypt_and_verify(ciphertext, tag).decode('utf-8')
